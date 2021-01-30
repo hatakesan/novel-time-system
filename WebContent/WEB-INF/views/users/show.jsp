@@ -4,7 +4,7 @@
     <c:param name="content">
         <c:choose>
             <c:when test="${user != null}">
-                <h2>id: ${user.name}の情報</h2>
+                <h2>id: ${user.id}の情報</h2>
                 <table>
                     <tbody>
                         <tr>
