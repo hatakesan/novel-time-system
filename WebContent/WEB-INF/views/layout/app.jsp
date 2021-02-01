@@ -11,7 +11,19 @@
     <body>
         <div id="wrapper">
             <div id="header">
-                <h1>NovelTime</h1>
+                <div id="header_menu">
+                    <h1><a href="<c:url value='/' />">NovelTime</a></h1>
+                    <c:if test="${sessionScope.login_user != null}">
+                        <a href="<c:url value='/users/index'/>">ユーザー管理</a>
+                        <a href="<c:url value='/sentence/index'/>">見る</a>
+                    </c:if>
+                </div>
+                <c:if test="${sessionScope.login_user != null}">
+                    <div id="user_name">
+                        <c:out value="${sessionScope.login_user.name}"></c:out>&nbsp;さん&nbsp;&nbsp;&nbsp;
+                        <a href="<c:url value='/logout' />">ログアウト</a>
+                    </div>
+                </c:if>
             </div>
             <div id="content">
                 ${param.content}
