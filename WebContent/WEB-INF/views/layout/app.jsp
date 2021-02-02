@@ -15,7 +15,7 @@
                     <h1><a href="<c:url value='/' />">NovelTime</a></h1>
                     <c:if test="${sessionScope.login_user != null}">
                         <a href="<c:url value='/users/index'/>">ユーザー管理</a>
-                        <a href="<c:url value='/sentence/index'/>">見る</a>
+                        <a href="<c:url value='/novels/index'/>">見る</a>
                     </c:if>
                 </div>
                 <c:if test="${sessionScope.login_user != null}">
