@@ -30,9 +30,11 @@ public class NovelsNewServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
+    //新規投稿画面へ
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("_token", request.getSession().getId());
 
+        //空のNovelインスタンスを作っておく
         Novel n = new Novel();
         n.setNovel_date(new Date(System.currentTimeMillis()));
         request.setAttribute("novel", n);

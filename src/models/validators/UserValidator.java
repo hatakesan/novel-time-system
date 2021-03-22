@@ -9,19 +9,23 @@ import models.User;
 import utils.DBUtil;
 
 public class UserValidator {
+    //Userのバリデーション
     public static List<String> validate(User u, Boolean codeDuplicateCheckFlag, Boolean passwordCheckFlag) {
         List<String> errors = new ArrayList<String>();
 
+        //codeのバリデーション
         String code_error = validateCode(u.getCode(), codeDuplicateCheckFlag);
         if(!code_error.equals("")) {
             errors.add(code_error);
         }
 
+        //nameのバリデーション
         String name_error = validateName(u.getName());
         if(!name_error.equals("")) {
             errors.add(name_error);
         }
 
+        //passwordのバリデーション
         String password_error = validatePassword(u.getPassword(), passwordCheckFlag);
         if(!password_error.equals("")) {
             errors.add(password_error);
@@ -31,11 +35,14 @@ public class UserValidator {
 
     }
 
+
     private static String validateCode(String code, Boolean codeDuplicateCheckFlag) {
+        //codeが空だった場合
         if(code == null || code.equals("")) {
             return "ユーザーコードを入力してください。";
         }
 
+        //codeがすでに存在しているかどうか
         if(codeDuplicateCheckFlag) {
             EntityManager em = DBUtil.createEntityManager();
             long users_count = (long)em.createNamedQuery("checkRegisteredCode", Long.class)

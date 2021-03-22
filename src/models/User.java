@@ -25,7 +25,7 @@ import javax.persistence.Table;
             ),
     @NamedQuery(
             name = "checkLoginCodeAndPassword",
-            query = "SELECT e FROM User AS e WHERE e.delete_flag = 0 AND e.code = :code AND e.password = :pass"
+            query = "SELECT e FROM User AS e WHERE e.code = :code AND e.password = :pass"
             )
 })
 @Entity
@@ -37,6 +37,15 @@ public class User {
 
     @Column(name = "code", nullable = false, unique = true)
     private String code;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "password", length = 64, nullable = false)
+    private String password;
+
+    @Column(name = "delete_flag", nullable = false)
+    private Integer delete_flag;
 
     public Integer getId() {
         return id;
@@ -77,15 +86,6 @@ public class User {
     public void setDelete_flag(Integer delete_flag) {
         this.delete_flag = delete_flag;
     }
-
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "password", length = 64, nullable = false)
-    private String password;
-
-    @Column(name = "delete_flag", nullable = false)
-    private Integer delete_flag;
 
 
 }

@@ -4,10 +4,21 @@
     <c:param name="content">
         <c:choose>
             <c:when test="${novel != null}">
-                <h2>本文　編集ページ</h2>
+                <h2 id="new_edit_novel">編集ページ</h2>
                 <form method="POST" action="<c:url value='/novels/update'/>">
                     <c:import url="_form.jsp"></c:import>
                 </form>
+                <p><a href="#" onclick="confirmDestroy();">小説を削除する</a></p>
+                <form method="POST" action="<c:url value='/novels/destroy?id=${novel.id}' />">
+                    <input type="hidden" name="_token" value="${_token}" />
+                </form>
+                <script>
+                    function confirmDestroy() {
+                        if(confirm("本当に削除してよろしいですか？")) {
+                            document.forms[1].submit();
+                        }
+                    }
+                </script>
             </c:when>
             <c:otherwise>
                 <h2>お探しのデータは見つかりませんでした</h2>

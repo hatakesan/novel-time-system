@@ -38,26 +38,32 @@ public class LoginFilter implements Filter {
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
+
+    //ログインしているかしていないかでアクセス制御
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String context_path = ((HttpServletRequest)request).getContextPath();
         String servlet_path = ((HttpServletRequest)request).getServletPath();
 
-        if(!servlet_path.matches("/css.")) {
-            HttpSession session = ((HttpServletRequest)request).getSession();
+        //cssとユーザー新規登録処理以外はログインしていないとアクセスできない
+        if(!servlet_path.matches("/css.*")) {
+            if(!servlet_path.matches("/users/new") && !servlet_path.matches("/users/create")) {
+                HttpSession session = ((HttpServletRequest)request).getSession();
 
-            User u = (User)session.getAttribute("login_user");
+                User u = (User)session.getAttribute("login_user");
 
-            if(!servlet_path.equals("/login")) {
-                if(u == null) {
-                    ((HttpServletResponse)response).sendRedirect(context_path + "/login");
-                    return;
-                }
-            } else {
-                if(u != null) {
-                    ((HttpServletResponse)response).sendRedirect(context_path + "/");
-                    return;
+                if(!servlet_path.equals("/login")) {
+                    if(u == null) {
+                        ((HttpServletResponse)response).sendRedirect(context_path + "/login");
+                        return;
+                    }
+                } else {
+                    if(u != null) {
+                        ((HttpServletResponse)response).sendRedirect(context_path + "/");
+                        return;
+                    }
                 }
             }
+
         }
 
         chain.doFilter(request, response);

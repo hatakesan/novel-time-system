@@ -34,7 +34,10 @@ public class UsersUpdateServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+
+    //ユーザーの更新処理
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //CSRF対策
         String _token = (String)request.getParameter("_token");
         if(_token != null && _token.equals(request.getSession().getId())) {
             EntityManager em = DBUtil.createEntityManager();
@@ -42,6 +45,7 @@ public class UsersUpdateServlet extends HttpServlet {
             User u = em.find(User.class, (Integer)(request.getSession().getAttribute("user_id")));
 
 
+            //codeが変更されていれば、すでに登録されているcodeかどうか確認する処理をさせる
             Boolean codeDuplicateCheckFlag = true;
             if(u.getCode().equals(request.getParameter("code"))) {
                 codeDuplicateCheckFlag = false;
@@ -49,6 +53,7 @@ public class UsersUpdateServlet extends HttpServlet {
                 u.setCode(request.getParameter("code"));
             }
 
+            //passwordが入力されていれば、ハッシュ化して新しいパスワードとして登録
             Boolean passwordCheckFlag = true;
             String password = request.getParameter("password");
             if(password == null || password.equals("")) {
@@ -61,6 +66,7 @@ public class UsersUpdateServlet extends HttpServlet {
             u.setName(request.getParameter("name"));
             u.setDelete_flag(0);
 
+            //バリデーション、codeとpasswordのバリデーションは選択できるようになっている（上の記述で）
             List<String> errors = UserValidator.validate(u, codeDuplicateCheckFlag, passwordCheckFlag);
             if(errors.size() > 0) {
                 em.close();
@@ -78,7 +84,7 @@ public class UsersUpdateServlet extends HttpServlet {
                 request.getSession().setAttribute("flush", "更新が完了しました");
                 request.getSession().removeAttribute("user_id");
 
-                response.sendRedirect(request.getContextPath() + "/users/index");
+                response.sendRedirect(request.getContextPath() + "/");
             }
         }
     }

@@ -35,6 +35,8 @@ public class NovelsUpdateServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+
+    //Novelの更新処理
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String _token = (String)request.getParameter("_token");
         if(_token != null && _token.equals(request.getSession().getId())) {
@@ -47,6 +49,7 @@ public class NovelsUpdateServlet extends HttpServlet {
             n.setSentence(request.getParameter("sentence"));
             n.setUpdated_at(new Timestamp(System.currentTimeMillis()));
 
+            //バリデーション
             List<String> errors = NovelValidator.validate(n);
             if(errors.size() > 0) {
                 em.close();

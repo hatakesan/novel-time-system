@@ -1,4 +1,4 @@
-package controllers.users;
+package controllers.follows;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,16 +18,16 @@ import models.User;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class UsersShowServlet
+ * Servlet implementation class UnFollowsServlet
  */
-@WebServlet("/users/show")
-public class UsersShowServlet extends HttpServlet {
+@WebServlet("/follows/unfollow")
+public class UnFollowsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public UsersShowServlet() {
+    public UnFollowsServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -35,12 +35,33 @@ public class UsersShowServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-
-    //ユーザー個人のページへ
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em = DBUtil.createEntityManager();
 
-        User u = em.find(User.class, Integer.parseInt(request.getParameter("id")));
+        //フォローを外すために、ログインユーザーのidと外す対象のidを取得
+        User u = (User) request.getSession().getAttribute("login_user");
+        int user_id = u.getId();
+        int follow_id = Integer.parseInt(request.getParameter("id"));
+
+        //フォローしているかしていないかの確認、フォローしていたらDBからそのデータを削除
+        Follow followRelation = null;
+
+        try{
+            followRelation = em.createNamedQuery("getFollowRelation", Follow.class).setParameter("user_id", user_id).setParameter("follow_id", follow_id).getSingleResult();
+        }catch (NoResultException ex) {
+
+        }
+
+        if(followRelation != null) {
+            em.getTransaction().begin();
+            em.remove(followRelation);
+            em.getTransaction().commit();
+            followRelation = null;
+            request.setAttribute("followRelation", followRelation);
+        }
+
+
+        User user = em.find(User.class, Integer.parseInt(request.getParameter("id")));
 
         //ページネーション
         int page;
@@ -50,58 +71,39 @@ public class UsersShowServlet extends HttpServlet {
             page = 1;
         }
 
-
-        //ユーザーのNovelを取得
         List<Novel> novels = em.createNamedQuery("getMyAllNovels", Novel.class)
-                .setParameter("user", u)
+                .setParameter("user", user)
                 .setFirstResult(15 * (page - 1))
                 .setMaxResults(15)
                 .getResultList();
 
         long novels_count = (long)em.createNamedQuery("getMyNovelsCount", Long.class)
-                .setParameter("user", u)
+                .setParameter("user", user)
                 .getSingleResult();
 
-        User login_user = (User) request.getSession().getAttribute("login_user");
-
-
-        //ログインユーザーがフォローしているかどうか
-        Follow followRelation = null;
-
-        try{
-            followRelation = em.createNamedQuery("getFollowRelation", Follow.class).setParameter("user_id", login_user.getId()).setParameter("follow_id", u.getId()).getSingleResult();
-        }catch (NoResultException ex) {
-
-        }
-
-        //フォローフォロワ数の取得
         long follow_count = (long)em.createNamedQuery("getFollowCount", Long.class)
-                .setParameter("user_id", u.getId())
+                .setParameter("user_id", follow_id)
                 .getSingleResult();
 
         long follower_count = (long)em.createNamedQuery("getFollowerCount", Long.class)
-                .setParameter("follow_id", u.getId())
+                .setParameter("follow_id", follow_id)
                 .getSingleResult();
-
-
-
-
 
         em.close();
 
-
-        if(followRelation != null) {
-            request.setAttribute("followRelation", followRelation);
-        }
         request.setAttribute("novels", novels);
         request.setAttribute("novels_count", novels_count);
         request.setAttribute("page", page);
-        request.getSession().setAttribute("user", u);
+        request.getSession().setAttribute("user", user);
         request.setAttribute("follow_count", follow_count);
         request.setAttribute("follower_count", follower_count);
 
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/users/show.jsp");
         rd.forward(request, response);
+
+
+
+
     }
 
 }

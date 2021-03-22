@@ -11,18 +11,21 @@
                 <c:out value="${flush}"></c:out>
             </div>
         </c:if>
-        <h2>ログイン</h2>
-        <form method="POST" action="<c:url value='/login' />">
-            <label for="code">ユーザーコード</label><br />
-            <input type="text" name="code" value="${code}" />
-            <br /><br />
+        <div id="login"><h2 id="attention">ログイン</h2>
+            <form method="POST" action="<c:url value='/login' />">
+                <label for="code">ユーザーコード</label><br />
+                <input type="text" name="code" value="${code}" />
+                <br /><br />
 
-            <label for="password">パスワード</label><br />
-            <input type="password" name="password" />
-            <br /><br />
+                <label for="password">パスワード</label><br />
+                <input type="password" name="password" />
+                <br /><br />
 
-            <input type="hidden" name="_token" value="${_token}" />
-            <button type="submit">ログイン</button>
-        </form>
+                <input type="hidden" name="_token" value="${_token}" />
+                <button id="submit" type="submit">ログイン</button>
+            </form>
+
+            <p><a href="<c:url value='/users/new'/>">新規登録</a></p></div>
+
     </c:param>
 </c:import>

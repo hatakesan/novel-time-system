@@ -8,17 +8,19 @@
         </c:forEach>
     </div>
 </c:if>
-<label for="code">ユーザーコード</label><br />
+
+<div></div>
+<label id="user_label"for="code">ユーザーコード</label>
 <input type="text" name="code" value="${user.code}" />
 <br /> <br />
 
-<label for="name">氏名</label><br />
+<label id="user_label2"for="name">氏名</label>
 <input type="text" name="name" value="${user.name}" />
 <br /><br />
 
-<label for="password">パスワード</label><br />
-<input type="password" name="password"/>
+<label id="user_label3" for="password">パスワード</label>
+<input  type="password" name="password"/>
 <br /><br />
 
 <input type="hidden" name="_token" value="${_token}">
-<button type="submit">登録</button>
+<button id="submit" type="submit">登録</button>

@@ -1,4 +1,4 @@
-package controllers.novel;
+package controllers.favorite;
 
 import java.io.IOException;
 
@@ -17,16 +17,16 @@ import models.User;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class NovelsShowServlet
+ * Servlet implementation class BeFavoritesServlet
  */
-@WebServlet("/novels/show")
-public class NovelsShowServlet extends HttpServlet {
+@WebServlet("/favorites/be")
+public class BeFavoritesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NovelsShowServlet() {
+    public BeFavoritesServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -34,19 +34,27 @@ public class NovelsShowServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-
-    //ここのNovelの詳細画面へ
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em = DBUtil.createEntityManager();
 
-        int novel_id = Integer.parseInt(request.getParameter("id"));
-        Novel n = em.find(Novel.class, novel_id);
-
+        //DBに登録するidを取得
         User login_user = (User) request.getSession().getAttribute("login_user");
         int user_id = login_user.getId();
+        int novel_id = Integer.parseInt(request.getParameter("id"));
 
+        Novel n = em.find(Novel.class, novel_id);
 
-        //お気に入り登録しているかどうか
+        Favorite fn = new Favorite();
+
+        fn.setUser_id(user_id);
+        fn.setNovel_id(novel_id);
+
+        //Favorite型のfnをDBに登録
+        em.getTransaction().begin();
+        em.persist(fn);
+        em.getTransaction().commit();
+
+        //お気に入り登録しているか検索
         Favorite favoriteRelation = null;
 
         try {
@@ -55,7 +63,6 @@ public class NovelsShowServlet extends HttpServlet {
             favoriteRelation = null;
         }
 
-        //お気に入り登録数の取得
         long favorite_count = (long)em.createNamedQuery("getFavoriteCount", Long.class)
                 .setParameter("novel_id", novel_id)
                 .getSingleResult();
@@ -69,6 +76,7 @@ public class NovelsShowServlet extends HttpServlet {
         }
         request.setAttribute("login_user", login_user);
         request.setAttribute("favorite_count", favorite_count);
+
 
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/novels/show.jsp");
         rd.forward(request, response);

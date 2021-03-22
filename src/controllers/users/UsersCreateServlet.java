@@ -34,18 +34,23 @@ public class UsersCreateServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+
+    //新規ユーザーの登録処理
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //CSRF対策
         String _token = (String)request.getParameter("_token");
         if(_token != null && _token.equals(request.getSession().getId())) {
             EntityManager em = DBUtil.createEntityManager();
 
             User u = new User();
 
+            //入力された値をセット
             u.setCode(request.getParameter("code"));
             u.setName(request.getParameter("name"));
             u.setPassword(EncryptUtil.getPasswordEncrypt(request.getParameter("password"), (String)this.getServletContext().getAttribute("pepper")));
             u.setDelete_flag(0);
 
+            //バリデーション
             List<String> errors = UserValidator.validate(u, true, true);
             if(errors.size() > 0) {
                 em.close();
@@ -63,7 +68,8 @@ public class UsersCreateServlet extends HttpServlet {
                 request.getSession().setAttribute("flush", "登録が完了しました");
                 em.close();
 
-                response.sendRedirect(request.getContextPath() + "/users/index");;
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/login/login.jsp");
+                rd.forward(request, response);
             }
         }
     }

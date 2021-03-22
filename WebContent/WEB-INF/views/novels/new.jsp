@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:import url="/WEB-INF/views/layout/app.jsp">
     <c:param name="content">
-        <h2>小説　投稿ページ</h2>
+        <h2 id="new_edit_novel">小説　新規投稿ページ</h2>
 
         <form method="POST" action="<c:url value='/novels/create' />">
             <c:import url="_form.jsp"></c:import>

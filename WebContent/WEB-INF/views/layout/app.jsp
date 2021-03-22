@@ -10,26 +10,38 @@
     </head>
     <body>
         <div id="wrapper">
-            <div id="header">
-                <div id="header_menu">
+            <div id="header_pc">
+                <div id="header_menu_pc">
                     <h1><a href="<c:url value='/' />">NovelTime</a></h1>
                     <c:if test="${sessionScope.login_user != null}">
-                        <a href="<c:url value='/users/index'/>">ユーザー管理</a>
-                        <a href="<c:url value='/novels/index'/>">見る</a>
+                        <a href="<c:url value='/users/edit?id=${sessionScope.login_user.id}'/>">ユーザー管理</a>&nbsp;
+                        <a href="<c:url value='/users/show?id=${sessionScope.login_user.id}'/>">マイページ</a>&nbsp;
+                        <a href="<c:url value="/novels/new"/>">投稿する</a>
+                        <a href="<c:url value="/favorites/my" />">お気に入り</a>
                     </c:if>
                 </div>
                 <c:if test="${sessionScope.login_user != null}">
-                    <div id="user_name">
-                        <c:out value="${sessionScope.login_user.name}"></c:out>&nbsp;さん&nbsp;&nbsp;&nbsp;
+                    <div id="logout">
                         <a href="<c:url value='/logout' />">ログアウト</a>
                     </div>
                 </c:if>
             </div>
+            <div id="header_phone">
+                <div id="header_menu_pc">
+                    <h1 id="noveltime_phone"><a href="<c:url value='/' />">NovelTime</a></h1>
+                    <c:if test="${sessionScope.login_user != null}">
+                        <div id="menu_phone">
+                            <a href="<c:url value='/users/edit?id=${sessionScope.login_user.id}'/>">ユーザー管理</a>&nbsp;
+                            <a href="<c:url value='/users/show?id=${sessionScope.login_user.id}'/>">マイページ</a>&nbsp;
+                            <a href="<c:url value="/novels/new"/>">投稿する</a>
+                            <a href="<c:url value="/favorites/my" />">お気に入り</a>&nbsp;
+                            <a href="<c:url value='/logout' />">ログアウト</a>
+                        </div>
+                    </c:if>
+                </div>
+            </div>
             <div id="content">
                 ${param.content}
-            </div>
-            <div id="footer">
-                by Ryou Hatakeyama
             </div>
         </div>
 

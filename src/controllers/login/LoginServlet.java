@@ -33,9 +33,12 @@ public class LoginServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
+
+    //ログイン画面を表示
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("_token", request.getSession().getId());
         request.setAttribute("hasError", false);
+        //flushがあった時の処理
         if(request.getSession().getAttribute("flush") != null) {
             request.setAttribute("flush", request.getSession().getAttribute("flush"));
             request.getSession().removeAttribute("flush");
@@ -48,19 +51,27 @@ public class LoginServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+
+    //ログインの処理
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Boolean check_result = false;
 
+        //入力されたcode、passwordを取得
         String code = request.getParameter("code");
         String plain_pass = request.getParameter("password");
 
         User u = null;
 
+
+        //code、passwordが入力されているかどうか
         if(code != null && !code.equals("") && plain_pass != null && !plain_pass.equals("")) {
             EntityManager em = DBUtil.createEntityManager();
 
+            //DBで保存されているハッシュ化されたパスワードと照合させるためにハッシュ化されたパスワードを取得
             String password = EncryptUtil.getPasswordEncrypt(plain_pass, (String)this.getServletContext().getAttribute("pepper"));
 
+
+            //入力された内容に合致するUserが存在するか確認
             try {
                 u = em.createNamedQuery("checkLoginCodeAndPassword", User.class).setParameter("code", code).setParameter("pass", password).getSingleResult();
             }catch(NoResultException ex) {
@@ -72,6 +83,8 @@ public class LoginServlet extends HttpServlet {
             if(u != null) {
                 check_result = true;
             }
+
+
 
             if(!check_result) {
                 request.setAttribute("_token", request.getSession().getId());

@@ -1,6 +1,7 @@
-package controllers.toppage;
+package controllers.favorite;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,20 +12,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import models.Favorite;
 import models.Novel;
+import models.User;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class TopPageIndexServlet
+ * Servlet implementation class MyFavoritesServlet
  */
-@WebServlet("/index.html")
-public class TopPageIndexServlet extends HttpServlet {
+@WebServlet("/favorites/my")
+public class MyFavoritesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public TopPageIndexServlet() {
+    public MyFavoritesServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,15 +35,14 @@ public class TopPageIndexServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-
-    //トップページへ
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-
-
         EntityManager em = DBUtil.createEntityManager();
 
-        //ページネーション
+        //ログインユーザーのidを取得
+        User login_user = (User) request.getSession().getAttribute("login_user");
+        int user_id = login_user.getId();
+
+        //ページネーションの設定
         int page;
         try{
             page = Integer.parseInt(request.getParameter("page"));
@@ -48,13 +50,24 @@ public class TopPageIndexServlet extends HttpServlet {
             page = 1;
         }
 
-        //すべてのNovelインスタンスを取得
-        List<Novel> novels = em.createNamedQuery("getAllNovels", Novel.class)
+        //Favorite型が格納されているリストの作成、同時に15個ずつ表示されるように。
+        List<Favorite> favorite_list = em.createNamedQuery("getMyFavorite", Favorite.class)
+                .setParameter("user_id", user_id)
                 .setFirstResult(15 * (page - 1))
                 .setMaxResults(15)
                 .getResultList();
 
-        long novels_count = (long)em.createNamedQuery("getNovelsCount", Long.class)
+        //Novel型のリスト作成
+        List<Novel> novels = new ArrayList<Novel>();
+
+        //拡張for文でお気に入り登録しているNovelインスタンスをnovelsに格納
+        for(Favorite fl : favorite_list) {
+            novels.add(em.find(Novel.class, fl.getNovel_id()));
+        }
+
+        //お気に入りの数を取得
+        long novels_count = (long)em.createNamedQuery("getMyFavoriteCount", Long.class)
+                .setParameter("user_id", user_id)
                 .getSingleResult();
 
         em.close();
@@ -62,12 +75,8 @@ public class TopPageIndexServlet extends HttpServlet {
         request.setAttribute("novels", novels);
         request.setAttribute("novels_count", novels_count);
         request.setAttribute("page", page);
-        if(request.getSession().getAttribute("flush") != null) {
-            request.setAttribute("flush", request.getSession().getAttribute("flush"));
-            request.getSession().removeAttribute("flush");
-        }
 
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/novels/index.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/novels/favorite.jsp");
         rd.forward(request, response);
     }
 

@@ -9,21 +9,17 @@
         </c:forEach>
     </div>
 </c:if>
-<label for="novel_date">日付</label>
+&nbsp;&nbsp;<label for="novel_date">日付</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="date" name="novel_date" value="<fmt:formatDate value='${novel.novel_date}' pattern='yyyy-MM-dd' />"/>
 <br /><br />
 
-<label for="name">氏名</label><br />
-<c:out value="${sessionScope.login_user.name}"></c:out>
-<br /><br />
-
-<label for="title">タイトル</label><br />
+&nbsp;&nbsp;<label for="title">タイトル</label>
 <input type="text" name="title" value="${novel.title}"/>
 <br /><br />
 
-<label for="sentence">内容</label>
-<textarea name="sentence" rows="10" cols="50">${novel.sentence}</textarea>
+&nbsp;&nbsp;<label for="sentence">内容</label><br />
+<textarea id="main_form" name="sentence" maxlength="6000">${novel.sentence}</textarea>
 <br /><br />
 
 <input type="hidden" name="_token" value="${_token}"/>
-<button type="submit">投稿</button>
+<button id="submit" type="submit">投稿</button>

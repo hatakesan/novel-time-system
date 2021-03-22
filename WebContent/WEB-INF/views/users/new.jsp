@@ -8,6 +8,6 @@
             <c:import url="_form.jsp"></c:import>
         </form>
 
-        <p><a href="<c:url value='/users/index' />">一覧に戻る</a></p>
+        <p><a href="<c:url value='/users/index' />">ログイン画面に戻る</a></p>
     </c:param>
 </c:import>

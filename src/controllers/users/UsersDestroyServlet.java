@@ -30,22 +30,26 @@ public class UsersDestroyServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+    //ユーザーの削除処理、現段階ではまだ使われていない
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //CSRF対策
         String _token = (String)request.getParameter("_token");
         if(_token != null && _token.equals(request.getSession().getId())) {
             EntityManager em = DBUtil.createEntityManager();
 
             User u = em.find(User.class, (Integer)(request.getSession().getAttribute("user_id")));
-            u.setDelete_flag(1);
 
 
             em.getTransaction().begin();
             em.remove(u);
             em.getTransaction().commit();
-            em.close();
-            request.getSession().setAttribute("flush", "削除が完了しました");
 
-            response.sendRedirect(request.getContextPath() + "/users/index");;
+            em.close();
+
+            request.getSession().removeAttribute("login_user");
+            request.getSession().setAttribute("flush", "削除が完了しました");
+            response.sendRedirect(request.getContextPath() + "/login");
+
         }
     }
 
